@@ -19,11 +19,27 @@ ul {
 img {
   max-width: 100%;
 }
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+.arrow {
+  font-size: 1.25rem;
+  padding: .75em 1.5em;
+  background-color: #e3e3e3;
+  border: none;
+}
+
 .image-list {
   --_gap: 20px;
   --_items-shown: 5;
   --_first_item_ratio: 1.75;
   --_first_item_col: 1.75fr;
+  --_transition-duration: 500ms;
 
   display: grid;
   grid-template-rows: 1fr;
@@ -48,7 +64,7 @@ img {
 
 .image-list.move-next {
   .image-list__item {
-    transition: 500ms ease-in-out;
+    transition: var(--_transition-duration) ease-in-out;
 
     &:nth-child(-n+5) {
       transform: translateX(calc(-100% - var(--_gap)));
@@ -62,24 +78,41 @@ img {
     &:nth-child(6) {
       transform: none;
     }
+    &.entering {
+      animation-name: fake-slide-to-left;
+      animation-duration: var(--_transition-duration);
+      animation-timing-function: ease-in-out;
+    }
   }
 }
 
-.image-list.move-prev {
-  .image-list__item {
-    transition: 500ms ease-in-out;
+// .image-list.move-prev {
+//   .image-list__item {
+//     transition: var(--_transition-duration) ease-in-out;
 
-    &:nth-child(-n+5) {
-      transform: translateX(calc(100% + var(--_gap)));
-    }
-    &:nth-child(2) {
-      transform: 
-        translateX(calc((var(--_first_item_ratio) - 1) * 50% + 100% + var(--_gap))) 
-        scale(var(--_first_item_ratio));
-      transform-origin: center bottom;
-    }
-    &:nth-child(6) {
-      transform: none;
-    }
+//     &:nth-child(-n+5) {
+//       transform: translateX(calc(100% + var(--_gap)));
+//     }
+//     &:nth-child(2) {
+//       transform: 
+//         translateX(calc((var(--_first_item_ratio) - 1) * 50% + 100% + var(--_gap))) 
+//         scale(var(--_first_item_ratio));
+//       transform-origin: center bottom;
+//     }
+//     &:nth-child(6) {
+//       transform: none;
+//     }
+//   }
+// }
+  
+@keyframes fake-slide-to-left {
+  from {
+    transform: none;
+    clip-path: polygon(0 0, 0 0, 0 100%, 0% 100%);
+  }
+
+  to {
+    transform: translateX(calc(-100% - var(--_gap)));
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
   }
 }

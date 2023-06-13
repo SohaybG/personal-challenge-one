@@ -1,7 +1,7 @@
 import './style.scss'
 
 let imageList = document.querySelector('.image-list');
-if (needsClonedItem(imageList)) {
+if (getDiffBetweenItemsToShowAndExisting(imageList) == 0) {
   let firstEl = imageList.firstElementChild;
   let clonedFirstEl = firstEl.cloneNode(true);
   clonedFirstEl.classList.add('cloned');
@@ -13,34 +13,43 @@ document.querySelector('.js-next').addEventListener('click', () => moveSlide('ne
 
 function moveSlide(direction = 'next') {
   let imageList = document.querySelector('.image-list');
-  let listNeedsClone = needsClonedItem(imageList);
-
-  if (imageList.classList.contains(`move-${direction}`)) return;
   
+  if (imageList.classList.contains(`move-${direction}`)) return;
+
+  let itemsQuota = getDiffBetweenItemsToShowAndExisting(imageList);
+  let transitionDuration = getComputedStyle(imageList).getPropertyValue('--_transition-duration');
+  transitionDuration = transitionDuration.indexOf('ms') ? parseInt(transitionDuration) : parseInt(transitionDuration) * 1000;
   imageList.classList.add(`move-${direction}`);
 
   let firstEl = imageList.firstElementChild;
   let secondEl = imageList.children[1];
-  let elementToAppend = listNeedsClone ? secondEl : firstEl;
+  let elementToAppend = itemsQuota == 0 ? secondEl : firstEl;
+  elementToAppend = elementToAppend.cloneNode(true);
+
+  if (itemsQuota < 0) {
+    elementToAppend.classList.add('entering');
+    imageList.appendChild(elementToAppend);
+  }
 
   setTimeout(() => {
     imageList.classList.remove(`move-${direction}`);
     imageList.removeChild(firstEl);
-    elementToAppend = elementToAppend.cloneNode(true);
+    elementToAppend.classList.remove('entering');
 
-    if (listNeedsClone) {
+    if (itemsQuota == 0) {
       imageList.querySelector('.cloned').classList.remove('cloned');
       elementToAppend.classList.add('cloned');
     }
 
-    imageList.appendChild(elementToAppend);
-  }, 500);
-  
+    if (itemsQuota >= 0) {
+      imageList.appendChild(elementToAppend);
+    }
+  }, transitionDuration);
 }
 
-function needsClonedItem(parent) {
+function getDiffBetweenItemsToShowAndExisting(parent) {
   let numberOfItemsToShow = getComputedStyle(parent).getPropertyValue('--_items-shown');
-  return getNumberOfOriginalItems(parent) == numberOfItemsToShow;
+  return getNumberOfOriginalItems(parent) - numberOfItemsToShow;
 }
 
 function getNumberOfOriginalItems(parent) {
