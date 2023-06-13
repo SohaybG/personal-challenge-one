@@ -62,6 +62,10 @@ img {
   }
 }
 
+.cloned--cropped {
+  clip-path: polygon(0 0, 0 0, 0 100%, 0% 100%);
+}
+
 .image-list.move-next {
   .image-list__item {
     transition: var(--_transition-duration) ease-in-out;
@@ -83,6 +87,9 @@ img {
       animation-duration: var(--_transition-duration);
       animation-timing-function: ease-in-out;
     }
+  }
+  .cloned--cropped {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
   }
 }
 

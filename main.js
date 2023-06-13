@@ -1,10 +1,16 @@
 import './style.scss'
 
 let imageList = document.querySelector('.image-list');
-if (getDiffBetweenItemsToShowAndExisting(imageList) == 0) {
+let diff = getDiffBetweenItemsToShowAndExisting(imageList);
+if (diff <= 0) {
   let firstEl = imageList.firstElementChild;
   let clonedFirstEl = firstEl.cloneNode(true);
   clonedFirstEl.classList.add('cloned');
+  
+  if (diff < 0) {
+    clonedFirstEl.classList.add('cloned--cropped');
+  }
+
   imageList.appendChild(clonedFirstEl);
 }
 
@@ -23,27 +29,24 @@ function moveSlide(direction = 'next') {
 
   let firstEl = imageList.firstElementChild;
   let secondEl = imageList.children[1];
-  let elementToAppend = itemsQuota == 0 ? secondEl : firstEl;
+  let elementToAppend = itemsQuota <= 0 ? secondEl : firstEl;
   elementToAppend = elementToAppend.cloneNode(true);
-
-  if (itemsQuota < 0) {
-    elementToAppend.classList.add('entering');
-    imageList.appendChild(elementToAppend);
-  }
 
   setTimeout(() => {
     imageList.classList.remove(`move-${direction}`);
     imageList.removeChild(firstEl);
-    elementToAppend.classList.remove('entering');
 
-    if (itemsQuota == 0) {
+    if (itemsQuota <= 0) {
       imageList.querySelector('.cloned').classList.remove('cloned');
       elementToAppend.classList.add('cloned');
+
+      if (itemsQuota < 0) {
+        imageList.querySelector('.cloned--cropped').classList.remove('cloned--cropped');
+        elementToAppend.classList.add('cloned--cropped');
+      }
     }
 
-    if (itemsQuota >= 0) {
-      imageList.appendChild(elementToAppend);
-    }
+    imageList.appendChild(elementToAppend);
   }, transitionDuration);
 }
 
