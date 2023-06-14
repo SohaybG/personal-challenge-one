@@ -2,6 +2,8 @@ import './style.scss'
 
 let imageList = document.querySelector('.image-list');
 let diff = getDiffBetweenItemsToShowAndExisting(imageList);
+adaptItemCountClasses(imageList);
+
 if (diff <= 0) {
   let firstEl = imageList.firstElementChild;
   let clonedFirstEl = firstEl.cloneNode(true);
@@ -16,6 +18,9 @@ if (diff <= 0) {
 
 document.querySelector('.js-prev').addEventListener('click', () => moveSlide('prev'));
 document.querySelector('.js-next').addEventListener('click', () => moveSlide('next'));
+document.querySelectorAll('.item-amount-changer button').forEach(button => button.addEventListener('click', function() {
+  updateItemCount(this.dataset.count);
+}));
 
 function moveSlide(direction = 'next') {
   let imageList = document.querySelector('.image-list');
@@ -47,6 +52,7 @@ function moveSlide(direction = 'next') {
     }
 
     imageList.appendChild(elementToAppend);
+    adaptItemCountClasses(imageList);
   }, transitionDuration);
 }
 
@@ -57,4 +63,28 @@ function getDiffBetweenItemsToShowAndExisting(parent) {
 
 function getNumberOfOriginalItems(parent) {
   return parent.querySelectorAll(':scope > :not(.cloned)').length;
+}
+
+function adaptItemCountClasses(parent) {
+  let numberOfItemsToShow = getComputedStyle(parent).getPropertyValue('--_items-shown');
+  let activeClass = 'image-list__item--active';
+  let lastActiveClass = 'image-list__item--last-active';
+  document.querySelectorAll(`.${activeClass}`).forEach(item => item.classList.remove(activeClass));
+  document.querySelectorAll(`.${lastActiveClass}`).forEach(item => item.classList.remove(lastActiveClass));
+
+  console.log(parent.children.length)
+
+  for (let i = 0; i < numberOfItemsToShow && i < parent.children.length; i++) {
+    parent.children[i].classList.add(activeClass);
+    
+    if (i == numberOfItemsToShow - 1) {
+      parent.children[i].classList.add(lastActiveClass);
+    }
+  }
+}
+
+function updateItemCount(count) {
+  let imageList = document.querySelector('.image-list');
+  imageList.style.setProperty('--_items-shown', count);
+  adaptItemCountClasses(imageList);
 }
