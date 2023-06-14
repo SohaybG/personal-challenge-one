@@ -57,8 +57,12 @@ function adaptItemCountClasses(parent) {
   let numberOfItemsToShow = getComputedStyle(parent).getPropertyValue('--_items-shown');
   let activeClass = 'image-list__item--active';
   let lastActiveClass = 'image-list__item--last-active';
+  let lastPossibleActiveItem = parent.querySelector(`:scope > :nth-child(${numberOfItemsToShow})`);
   document.querySelectorAll(`.${lastActiveClass}`).forEach(item => item.classList.remove(lastActiveClass));
-  parent.querySelector(`:scope > :nth-child(${numberOfItemsToShow})`).classList.add(lastActiveClass);
+
+  if (lastPossibleActiveItem) {
+    lastPossibleActiveItem.classList.add(lastActiveClass);
+  }
   
   document.querySelectorAll(`.${activeClass}`).forEach(item => item.classList.remove(activeClass));
 
