@@ -1,20 +1,8 @@
 import './style.scss'
 
 let imageList = document.querySelector('.image-list');
-let diff = getDiffBetweenItemsToShowAndExisting(imageList);
+adaptClones();
 adaptItemCountClasses(imageList);
-
-if (diff <= 0) {
-  let firstEl = imageList.firstElementChild;
-  let clonedFirstEl = firstEl.cloneNode(true);
-  clonedFirstEl.classList.add('cloned');
-  
-  if (diff < 0) {
-    clonedFirstEl.classList.add('cloned--cropped');
-  }
-
-  imageList.appendChild(clonedFirstEl);
-}
 
 document.querySelector('.js-prev').addEventListener('click', () => moveSlide('prev'));
 document.querySelector('.js-next').addEventListener('click', () => moveSlide('next'));
@@ -69,22 +57,41 @@ function adaptItemCountClasses(parent) {
   let numberOfItemsToShow = getComputedStyle(parent).getPropertyValue('--_items-shown');
   let activeClass = 'image-list__item--active';
   let lastActiveClass = 'image-list__item--last-active';
-  document.querySelectorAll(`.${activeClass}`).forEach(item => item.classList.remove(activeClass));
   document.querySelectorAll(`.${lastActiveClass}`).forEach(item => item.classList.remove(lastActiveClass));
-
-  console.log(parent.children.length)
+  parent.querySelector(`:scope > :nth-child(${numberOfItemsToShow})`).classList.add(lastActiveClass);
+  
+  document.querySelectorAll(`.${activeClass}`).forEach(item => item.classList.remove(activeClass));
 
   for (let i = 0; i < numberOfItemsToShow && i < parent.children.length; i++) {
     parent.children[i].classList.add(activeClass);
-    
-    if (i == numberOfItemsToShow - 1) {
-      parent.children[i].classList.add(lastActiveClass);
-    }
   }
 }
 
 function updateItemCount(count) {
   let imageList = document.querySelector('.image-list');
   imageList.style.setProperty('--_items-shown', count);
+  adaptClones();
   adaptItemCountClasses(imageList);
+}
+
+function adaptClones() {
+  let imageList = document.querySelector('.image-list');
+  let diff = getDiffBetweenItemsToShowAndExisting(imageList);
+  let cloneClass = 'cloned';
+  let croppedCloneClass = 'cloned--cropped';
+
+  if (diff <= 0) {
+    let firstEl = imageList.firstElementChild;
+    let clonedFirstEl = firstEl.cloneNode(true);
+    clonedFirstEl.classList.add(cloneClass);
+    
+    if (diff < 0) {
+      clonedFirstEl.classList.add(croppedCloneClass);
+    }
+  
+    imageList.appendChild(clonedFirstEl);
+  } else {
+    document.querySelectorAll(`.${cloneClass}`).forEach(item => item.classList.remove(cloneClass));
+    document.querySelectorAll(`.${croppedCloneClass}`).forEach(item => item.classList.remove(croppedCloneClass));
+  }
 }
