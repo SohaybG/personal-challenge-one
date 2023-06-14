@@ -15,25 +15,26 @@ function moveSlide(direction = 'next') {
   
   if (imageList.classList.contains(`move-${direction}`)) return;
 
-  let itemsQuota = getDiffBetweenItemsToShowAndExisting(imageList);
+  let itemsDiff = getDiffBetweenItemsToShowAndExisting(imageList);
   let transitionDuration = getComputedStyle(imageList).getPropertyValue('--_transition-duration');
   transitionDuration = transitionDuration.indexOf('ms') ? parseInt(transitionDuration) : parseInt(transitionDuration) * 1000;
-  imageList.classList.add(`move-${direction}`);
 
   let firstEl = imageList.firstElementChild;
   let secondEl = imageList.children[1];
-  let elementToAppend = itemsQuota <= 0 ? secondEl : firstEl;
+  let elementToAppend = itemsDiff <= 0 ? secondEl : firstEl;
   elementToAppend = elementToAppend.cloneNode(true);
+
+  imageList.classList.add(`move-${direction}`);
 
   setTimeout(() => {
     imageList.classList.remove(`move-${direction}`);
     imageList.removeChild(firstEl);
 
-    if (itemsQuota <= 0) {
+    if (itemsDiff <= 0) {
       imageList.querySelector('.cloned').classList.remove('cloned');
       elementToAppend.classList.add('cloned');
 
-      if (itemsQuota < 0) {
+      if (itemsDiff < 0) {
         imageList.querySelector('.cloned--cropped').classList.remove('cloned--cropped');
         elementToAppend.classList.add('cloned--cropped');
       }
