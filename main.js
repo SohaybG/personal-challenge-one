@@ -5,36 +5,55 @@ const cloneClasses = {
   last: 'cloned--last',
   cropped: 'cloned--cropped'
 }
-let imageList = document.querySelector('.image-list');
-adaptClones();
-adaptItemCountClasses(imageList);
 
-document.querySelector('.js-prev').addEventListener('click', () => moveSlide('prev'));
-document.querySelector('.js-next').addEventListener('click', () => moveSlide('next'));
+document.querySelectorAll('.image-list').forEach(slider => {
+  initSlider(slider);
+});
+
+document.querySelectorAll('.js-prev').forEach(button => {
+  button.addEventListener('click', function() {
+    let slider = document.querySelector(this.dataset.target);
+    moveSlide(slider, 'prev');
+  });
+});
+
+document.querySelectorAll('.js-next').forEach(button => {
+  button.addEventListener('click', function() {
+    let slider = document.querySelector(this.dataset.target);
+    moveSlide(slider, 'next');
+  });
+});
+
 document.querySelectorAll('.item-amount-changer button').forEach(button => button.addEventListener('click', function() {
   updateItemCount(this.dataset.count);
 }));
 
-function moveSlide(direction = 'next') {
-  let imageList = document.querySelector('.image-list');
+function initSlider(slider) {
+  slider.classList.add('image-list--initialised');
+  adaptClones(slider);
+  adaptItemCountClasses(slider);
+}
 
-  if (imageList.className.indexOf(`move-`) > -1) return;
+function moveSlide(slider, direction = 'next') {
+  if (slider.className.indexOf(`move-`) > -1) return;
+  if (!slider.classList.contains('image-list--initialised')) return;
 
-  let itemsDiff = getDiffBetweenItemsToShowAndExisting(imageList);
+  let itemsDiff = getDiffBetweenItemsToShowAndExisting(slider);
   let hasClone = itemsDiff <= 0;
   let hasCroppedClone = itemsDiff < 0;
-  let transitionDuration = getComputedStyle(imageList).getPropertyValue('--_transition-duration');
-  let originalItems = getOriginalItems(imageList);
+  let transitionDuration = getComputedStyle(slider).getPropertyValue('--_transition-duration');
+  let originalItems = getOriginalItems(slider);
   transitionDuration = transitionDuration.indexOf('ms') ? parseInt(transitionDuration) : parseInt(transitionDuration) * 1000;
 
-  imageList.classList.add(`move-${direction}`);
+  slider.classList.add(`move-${direction}`);
 
   let data = {
     hasClone: hasClone,
     hasCroppedClone: hasCroppedClone,
     transitionDuration: transitionDuration,
     originalItems: originalItems,
-    direction: direction
+    direction: direction,
+    slider: slider
   }
 
   if (direction == 'next') {
@@ -45,26 +64,26 @@ function moveSlide(direction = 'next') {
 }
 
 function sliderNext(data) {
-  let { hasClone, hasCroppedClone, transitionDuration, originalItems, direction } = data;
+  let { hasClone, hasCroppedClone, transitionDuration, originalItems, direction, slider } = data;
   let croppedClone;
 
   if (hasCroppedClone) {
-    croppedClone = imageList.querySelector(`.${cloneClasses.cropped}`);
+    croppedClone = slider.querySelector(`.${cloneClasses.cropped}`);
     croppedClone.classList.add('entering');
   }
 
   setTimeout(() => {
-    imageList.classList.remove(`move-${direction}`);
+    slider.classList.remove(`move-${direction}`);
 
     let firstEl = originalItems[0];
     let secondEl = originalItems[1];
     let elementToAppend = hasClone ? secondEl.cloneNode(true) : firstEl.cloneNode(true);
     
     firstEl.classList.add(cloneClasses.base, cloneClasses.first);
-    imageList.removeChild(imageList.querySelector(`.${cloneClasses.first}`));
+    slider.removeChild(slider.querySelector(`.${cloneClasses.first}`));
 
     if (hasClone) {
-      imageList.querySelector(`.${cloneClasses.last}`).classList.remove(cloneClasses.base, cloneClasses.last);
+      slider.querySelector(`.${cloneClasses.last}`).classList.remove(cloneClasses.base, cloneClasses.last);
       elementToAppend.classList.add(cloneClasses.base, cloneClasses.last);
 
       if (hasCroppedClone) {
@@ -74,14 +93,14 @@ function sliderNext(data) {
       }
     }
 
-    imageList.appendChild(elementToAppend);
+    slider.appendChild(elementToAppend);
     
-    adaptItemCountClasses(imageList);
+    adaptItemCountClasses(slider);
   }, transitionDuration);
 }
 
 function sliderPrev(data) {
-  let { hasClone, hasCroppedClone, transitionDuration, originalItems, direction } = data;
+  let { hasClone, hasCroppedClone, transitionDuration, originalItems, direction, slider } = data;
   let lastEl = originalItems[originalItems.length - 1];
 
   if (hasCroppedClone) {
@@ -89,11 +108,11 @@ function sliderPrev(data) {
   }
 
   setTimeout(() => {
-    imageList.classList.remove(`move-${direction}`);
+    slider.classList.remove(`move-${direction}`);
     let clonedSecondLastEl = originalItems[originalItems.length - 2].cloneNode(true);
-    let elementToRemove = hasClone ? imageList.querySelector(`.${cloneClasses.last}`) : lastEl;
+    let elementToRemove = hasClone ? slider.querySelector(`.${cloneClasses.last}`) : lastEl;
 
-    imageList.querySelector(`.${cloneClasses.first}`).classList.remove(cloneClasses.base, cloneClasses.first);
+    slider.querySelector(`.${cloneClasses.first}`).classList.remove(cloneClasses.base, cloneClasses.first);
     clonedSecondLastEl.classList.add(cloneClasses.base, cloneClasses.first);
 
     if (hasClone) {
@@ -105,10 +124,10 @@ function sliderPrev(data) {
       }
     }
     
-    imageList.removeChild(elementToRemove);
-    imageList.prepend(clonedSecondLastEl);
+    slider.removeChild(elementToRemove);
+    slider.prepend(clonedSecondLastEl);
     
-    adaptItemCountClasses(imageList);
+    adaptItemCountClasses(slider);
   }, transitionDuration);
 }
 
@@ -130,9 +149,9 @@ function adaptItemCountClasses(parent) {
   let activeClass = 'image-list__item--active';
   let firstActiveClass = 'image-list__item--first-active';
   let lastActiveClass = 'image-list__item--last-active';
-  document.querySelectorAll(`.${firstActiveClass}`).forEach(item => item.classList.remove(firstActiveClass));
-  document.querySelectorAll(`.${lastActiveClass}`).forEach(item => item.classList.remove(lastActiveClass));
-  document.querySelectorAll(`.${activeClass}`).forEach(item => item.classList.remove(activeClass));
+  parent.querySelectorAll(`.${firstActiveClass}`).forEach(item => item.classList.remove(firstActiveClass));
+  parent.querySelectorAll(`.${lastActiveClass}`).forEach(item => item.classList.remove(lastActiveClass));
+  parent.querySelectorAll(`.${activeClass}`).forEach(item => item.classList.remove(activeClass));
 
   let originalItems = parent.querySelectorAll(':scope > :not(.cloned)');
 
@@ -153,20 +172,19 @@ function adaptItemCountClasses(parent) {
 function updateItemCount(count) {
   let imageList = document.querySelector('.image-list');
   imageList.style.setProperty('--_items-shown', count);
-  adaptClones();
+  adaptClones(imageList);
   adaptItemCountClasses(imageList);
 }
 
-function adaptClones() {
-  let imageList = document.querySelector('.image-list');
-  let diff = getDiffBetweenItemsToShowAndExisting(imageList);
+function adaptClones(slider) {
+  let diff = getDiffBetweenItemsToShowAndExisting(slider);
   
-  let originalItems = getOriginalItems(imageList);
+  let originalItems = getOriginalItems(slider);
   let firstEl = originalItems[0];
 
   let clonedLastEl = originalItems[originalItems.length - 1].cloneNode(true);
   clonedLastEl.classList.add(cloneClasses.base, cloneClasses.first);
-  imageList.prepend(clonedLastEl);
+  slider.prepend(clonedLastEl);
 
   if (diff <= 0) {
     let clonedFirstEl = firstEl.cloneNode(true);
@@ -176,7 +194,7 @@ function adaptClones() {
       clonedFirstEl.classList.add(cloneClasses.cropped);
     }
   
-    imageList.appendChild(clonedFirstEl);
+    slider.appendChild(clonedFirstEl);
   } else {
     document.querySelectorAll(`.${cloneClasses.last}`).forEach(item => item.classList.remove(cloneClasses.base));
     document.querySelectorAll(`.${cloneClasses.cropped}`).forEach(item => item.classList.remove(cloneClasses.cropped));

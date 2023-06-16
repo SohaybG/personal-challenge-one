@@ -6,6 +6,7 @@
 
 body {
   margin: 0;
+  padding-block: 3rem;
 }
 .container {
   max-width: 1200px;
@@ -46,7 +47,6 @@ img {
   grid-template-columns: var(--_first_item_col) repeat(calc(var(--_items-shown) - 1), 1fr);
   align-items: end;
   gap: var(--_gap);
-  margin-top: 3rem;
   overflow: hidden;
 }
 .image-list__item {

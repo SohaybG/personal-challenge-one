@@ -7,7 +7,7 @@
   </head>
   <body>
     <div class="container">
-      <ul class="image-list">
+      <ul id="first-slider" class="image-list">
         <li class="image-list__item">
           <img src="/img/test_image_01_num.jpg" alt="">
         </li>
@@ -46,18 +46,68 @@
       </ul>
 
       <div class="controls">
-        <button class="arrow js-prev">Prev</button>
-        <button class="arrow js-next">Next</button>
+        <button class="arrow js-prev" data-target="#first-slider">Prev</button>
+        <button class="arrow js-next" data-target="#first-slider">Next</button>
       </div>
       
-      <ul class="item-amount-changer">
+      <!-- <ul class="item-amount-changer">
         <li><button data-count="2">2</button></li>
         <li><button data-count="3">3</button></li>
         <li><button data-count="4">4</button></li>
         <li><button data-count="5">5</button></li>
         <li><button data-count="6">6</button></li>
         <li><button data-count="12">12</button></li>
+      </ul> -->
+
+      <ul id="second-slider" class="image-list">
+        <li class="image-list__item">
+          <img src="/img/test_image_01_num.jpg" alt="">
+        </li>
+
+        <li class="image-list__item">
+          <img src="/img/test_image_02_num.jpg" alt="">
+        </li>
+
+        <li class="image-list__item">
+          <img src="/img/test_image_03_num.jpg" alt="">
+        </li>
+
+        <li class="image-list__item">
+          <img src="/img/test_image_04_num.jpg" alt="">
+        </li>
+
+        <li class="image-list__item">
+          <img src="/img/test_image_05_num.jpg" alt="">
+        </li>
       </ul>
+
+      <div class="controls">
+        <button class="arrow js-prev" data-target="#second-slider">Prev</button>
+        <button class="arrow js-next" data-target="#second-slider">Next</button>
+      </div>
+
+      <ul id="third-slider" class="image-list">
+        <li class="image-list__item">
+          <img src="/img/test_image_01_num.jpg" alt="">
+        </li>
+
+        <li class="image-list__item">
+          <img src="/img/test_image_02_num.jpg" alt="">
+        </li>
+
+        <li class="image-list__item">
+          <img src="/img/test_image_03_num.jpg" alt="">
+        </li>
+
+        <li class="image-list__item">
+          <img src="/img/test_image_04_num.jpg" alt="">
+        </li>
+      </ul>
+
+      <div class="controls">
+        <button class="arrow js-prev" data-target="#third-slider">Prev</button>
+        <button class="arrow js-next" data-target="#third-slider">Next</button>
+      </div>
     </div>
     <script type="module" src="/main.js"></script>
   </body>
