@@ -25,7 +25,7 @@ document.querySelectorAll('.js-next').forEach(button => {
 });
 
 document.querySelectorAll('.item-amount-changer button').forEach(button => button.addEventListener('click', function() {
-  updateItemCount(this.dataset.count);
+  updateItemCount(document.querySelector(this.dataset.target), this.dataset.count);
 }));
 
 function initSlider(slider) {
@@ -169,22 +169,26 @@ function adaptItemCountClasses(parent) {
   }
 }
 
-function updateItemCount(count) {
-  let imageList = document.querySelector('.image-list');
-  imageList.style.setProperty('--_items-shown', count);
-  adaptClones(imageList);
-  adaptItemCountClasses(imageList);
+function updateItemCount(slider, count) {
+  if (count < 2) return;
+
+  slider.style.setProperty('--_items-shown', count);
+  adaptClones(slider);
+  adaptItemCountClasses(slider);
 }
 
 function adaptClones(slider) {
+  slider.querySelectorAll(`.${cloneClasses.base}:not(.${cloneClasses.first})`).forEach(item => slider.removeChild(item));
+
   let diff = getDiffBetweenItemsToShowAndExisting(slider);
-  
   let originalItems = getOriginalItems(slider);
   let firstEl = originalItems[0];
 
-  let clonedLastEl = originalItems[originalItems.length - 1].cloneNode(true);
-  clonedLastEl.classList.add(cloneClasses.base, cloneClasses.first);
-  slider.prepend(clonedLastEl);
+  if (!slider.querySelector(`.${cloneClasses.first}`)) {
+    let clonedLastEl = originalItems[originalItems.length - 1].cloneNode(true);
+    clonedLastEl.classList.add(cloneClasses.base, cloneClasses.first);
+    slider.prepend(clonedLastEl);
+  }
 
   if (diff <= 0) {
     let clonedFirstEl = firstEl.cloneNode(true);
@@ -195,8 +199,5 @@ function adaptClones(slider) {
     }
   
     slider.appendChild(clonedFirstEl);
-  } else {
-    document.querySelectorAll(`.${cloneClasses.last}`).forEach(item => item.classList.remove(cloneClasses.base));
-    document.querySelectorAll(`.${cloneClasses.cropped}`).forEach(item => item.classList.remove(cloneClasses.cropped));
   }
 }
