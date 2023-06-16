@@ -75,6 +75,17 @@ img {
     transform: translateX(calc(-100% - var(--_gap)));
   }
 }
+.entering, .exiting {
+  animation-duration: var(--_transition-duration);
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
+}
+.entering {
+  animation-name: fake-slide-in-left;
+}
+.exiting {
+  animation-name: fake-slide-out-left;
+}
 
 .image-list.move-next {
   .image-list__item {
@@ -92,14 +103,6 @@ img {
     &--last-active + .image-list__item {
       transform: none;
     }
-    &.entering {
-      animation-name: fake-slide-in-left;
-      animation-duration: var(--_transition-duration);
-      animation-timing-function: ease-in-out;
-    }
-  }
-  .cloned--cropped {
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
   }
 }
 
@@ -112,19 +115,6 @@ img {
   to {
     transform: translateX(calc(-100% - var(--_gap)));
     clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
-  }
-}
-
-.item-amount-changer {
-  display: flex;
-  justify-content: center;
-  gap: .5rem;
-  margin-top: 4rem;
-  
-  button {
-    font-size: 1.125rem;
-    width: 2.5em;
-    aspect-ratio: 1 / 1;
   }
 }
 
@@ -141,11 +131,6 @@ img {
         translateY(calc(1 / var(--_first_item_ratio) * 25%))
         scale(calc(1 / var(--_first_item_ratio)));
     }
-    &.exiting {
-      animation-name: fake-slide-out-left;
-      animation-duration: var(--_transition-duration);
-      animation-timing-function: ease-in-out;
-    }
   }
   .cloned--first {
     transform: none;
@@ -159,5 +144,19 @@ img {
 
   to {
     clip-path: polygon(0 0, 0 0, 0 100%, 0% 100%);
+  }
+}
+
+
+.item-amount-changer {
+  display: flex;
+  justify-content: center;
+  gap: .5rem;
+  margin-top: 4rem;
+  
+  button {
+    font-size: 1.125rem;
+    width: 2.5em;
+    aspect-ratio: 1 / 1;
   }
 }
