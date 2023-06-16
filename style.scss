@@ -166,3 +166,9 @@ hr {
   margin-block: 3rem 4rem;
   max-width: 600px;
 }
+
+@media screen and (max-width: 800px) {
+  #first-slider {
+    --_items-shown: 3;
+  }
+}

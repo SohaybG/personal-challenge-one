@@ -28,6 +28,18 @@ document.querySelectorAll('.item-amount-changer button').forEach(button => butto
   updateItemCount(document.querySelector(this.dataset.target), this.dataset.count);
 }));
 
+window.addEventListener('resize', function() {
+  document.querySelectorAll('.image-list').forEach(slider => {
+    slider.style.setProperty('--_items-shown', '');
+    let numberOfItemsToShow = getComputedStyle(slider).getPropertyValue('--_items-shown');
+    let activeItems = slider.querySelectorAll('.image-list__item--active').length;
+
+    if (activeItems != numberOfItemsToShow) {
+      updateItemCount(slider, numberOfItemsToShow);
+    }
+  });
+});
+
 function initSlider(slider) {
   slider.classList.add('image-list--initialised');
   adaptClones(slider);
