@@ -48,10 +48,6 @@ img {
   gap: var(--_gap);
   margin-top: 3rem;
   overflow: hidden;
-
-  padding: 30px 0;
-  background-color: cadetblue;
-  overflow: initial;
 }
 .image-list__item {
   grid-row: 1 / 2;
@@ -74,7 +70,6 @@ img {
 .cloned {
   &--cropped {
     clip-path: polygon(0 0, 0 0, 0 100%, 0% 100%);
-    // filter: contrast(.5);
   }
   &--first {
     transform: translateX(calc(-100% - var(--_gap)));
