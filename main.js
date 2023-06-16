@@ -25,65 +25,88 @@ function moveSlide(direction = 'next') {
   let hasCroppedClone = itemsDiff < 0;
   let transitionDuration = getComputedStyle(imageList).getPropertyValue('--_transition-duration');
   let originalItems = getOriginalItems(imageList);
-  let croppedClone;
-  let lastEl = originalItems[originalItems.length - 1];
   transitionDuration = transitionDuration.indexOf('ms') ? parseInt(transitionDuration) : parseInt(transitionDuration) * 1000;
 
   imageList.classList.add(`move-${direction}`);
 
+  let data = {
+    hasClone: hasClone,
+    hasCroppedClone: hasCroppedClone,
+    transitionDuration: transitionDuration,
+    originalItems: originalItems,
+    direction: direction
+  }
+
+  if (direction == 'next') {
+    sliderNext(data);
+  } else {
+    sliderPrev(data);
+  }
+}
+
+function sliderNext(data) {
+  let { hasClone, hasCroppedClone, transitionDuration, originalItems, direction } = data;
+  let croppedClone;
+
   if (hasCroppedClone) {
-    if (direction == 'next') {
-      croppedClone = imageList.querySelector(`.${cloneClasses.cropped}`);
-      croppedClone.classList.add('entering');
-    } else {
-      lastEl.classList.add('exiting');
-    }
+    croppedClone = imageList.querySelector(`.${cloneClasses.cropped}`);
+    croppedClone.classList.add('entering');
   }
 
   setTimeout(() => {
     imageList.classList.remove(`move-${direction}`);
 
-    if (direction == 'next') {
-      let firstEl = originalItems[0];
-      let secondEl = originalItems[1];
-      let elementToAppend = hasClone ? secondEl : firstEl;
-      elementToAppend = elementToAppend.cloneNode(true);
-      
-      firstEl.classList.add(cloneClasses.base, cloneClasses.first);
-      imageList.removeChild(imageList.querySelector(`.${cloneClasses.first}`));
+    let firstEl = originalItems[0];
+    let secondEl = originalItems[1];
+    let elementToAppend = hasClone ? secondEl.cloneNode(true) : firstEl.cloneNode(true);
+    
+    firstEl.classList.add(cloneClasses.base, cloneClasses.first);
+    imageList.removeChild(imageList.querySelector(`.${cloneClasses.first}`));
 
-      if (hasClone) {
-        imageList.querySelector(`.${cloneClasses.last}`).classList.remove(cloneClasses.base, cloneClasses.last);
-        elementToAppend.classList.add(cloneClasses.base, cloneClasses.last);
-  
-        if (hasCroppedClone) {
-          croppedClone.classList.remove(cloneClasses.cropped);
-          croppedClone.classList.remove('entering');
-          elementToAppend.classList.add(cloneClasses.cropped);
-        }
+    if (hasClone) {
+      imageList.querySelector(`.${cloneClasses.last}`).classList.remove(cloneClasses.base, cloneClasses.last);
+      elementToAppend.classList.add(cloneClasses.base, cloneClasses.last);
+
+      if (hasCroppedClone) {
+        croppedClone.classList.remove(cloneClasses.cropped);
+        croppedClone.classList.remove('entering');
+        elementToAppend.classList.add(cloneClasses.cropped);
       }
-
-      imageList.appendChild(elementToAppend);
-    } else {
-      let clonedSecondLastEl = originalItems[originalItems.length - 2].cloneNode(true);
-
-      imageList.querySelector(`.${cloneClasses.first}`).classList.remove(cloneClasses.base, cloneClasses.first);
-      clonedSecondLastEl.classList.add(cloneClasses.base, cloneClasses.first);
-
-      if (hasClone) {
-        imageList.removeChild(imageList.querySelector(`.${cloneClasses.last}`));
-        lastEl.classList.add(cloneClasses.base, cloneClasses.last);
-
-        if (hasCroppedClone) {
-          lastEl.classList.add(cloneClasses.cropped);
-          lastEl.classList.remove('exiting');
-        }
-      } else {
-        imageList.removeChild(lastEl);
-      }
-
-      imageList.prepend(clonedSecondLastEl);
     }
+
+    imageList.appendChild(elementToAppend);
+    
+    adaptItemCountClasses(imageList);
+  }, transitionDuration);
+}
+
+function sliderPrev(data) {
+  let { hasClone, hasCroppedClone, transitionDuration, originalItems, direction } = data;
+  let lastEl = originalItems[originalItems.length - 1];
+
+  if (hasCroppedClone) {
+    lastEl.classList.add('exiting');
+  }
+
+  setTimeout(() => {
+    imageList.classList.remove(`move-${direction}`);
+    let clonedSecondLastEl = originalItems[originalItems.length - 2].cloneNode(true);
+    let elementToRemove = hasClone ? imageList.querySelector(`.${cloneClasses.last}`) : lastEl;
+
+    imageList.querySelector(`.${cloneClasses.first}`).classList.remove(cloneClasses.base, cloneClasses.first);
+    clonedSecondLastEl.classList.add(cloneClasses.base, cloneClasses.first);
+
+    if (hasClone) {
+      lastEl.classList.add(cloneClasses.base, cloneClasses.last);
+
+      if (hasCroppedClone) {
+        lastEl.classList.add(cloneClasses.cropped);
+        lastEl.classList.remove('exiting');
+      }
+    }
+    
+    imageList.removeChild(elementToRemove);
+    imageList.prepend(clonedSecondLastEl);
     
     adaptItemCountClasses(imageList);
   }, transitionDuration);
